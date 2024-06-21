@@ -1,36 +1,33 @@
-import { SessionModel } from "@/models/session.model";
-import { User } from "@/models/user.model";
-import { signJwt, verifyJwt } from "@/utils/jwt.utils";
+import { FilterQuery, UpdateQuery } from "mongoose";
+import SessionModel, { SessionDocument } from "../models/session.model";
+import { signJwt, verifyJwt } from "../utils/jwt.utils";
+import { findUser } from "./user.service";
 import get from "lodash/get";
 
-interface CreateSessionInput {
-  userId: string;
-  userAgent: string;
-}
-
-export async function createSession({ userId, userAgent }: CreateSessionInput) {
+export async function createSession(
+  userId: string,
+  userAgent: string
+): Promise<SessionDocument> {
   const session = await SessionModel.create({ user: userId, userAgent });
-  return session.toJSON();
+  return session.toObject();
 }
 
-export async function findSessions(query: Record<string, any>) {
+export async function findSessions(query: FilterQuery<SessionDocument>) {
   return SessionModel.find(query).lean();
 }
 
 export async function updateSession(
-  query: Record<string, any>,
-  update: Record<string, any>
+  query: FilterQuery<SessionDocument>,
+  update: UpdateQuery<SessionDocument>
 ) {
   return SessionModel.updateOne(query, update);
 }
 
-interface ReIssueAccessTokenInput {
-  refreshToken: string;
-}
-
 export async function reIssueAccessToken({
   refreshToken,
-}: ReIssueAccessTokenInput) {
+}: {
+  refreshToken: string;
+}): Promise<string | boolean> {
   const { decoded } = verifyJwt(refreshToken);
 
   if (!decoded || !get(decoded, "session")) return false;
@@ -39,14 +36,16 @@ export async function reIssueAccessToken({
 
   if (!session || !session.valid) return false;
 
-  const user = await User.findById(session.user);
+  const user = await findUser({ _id: session.user });
 
   if (!user) return false;
 
   const accessToken = signJwt(
-    { ...user.toJSON(), session: session._id },
-    { expiresIn: "30m" }
+    { ...user, session: session._id },
+    { expiresIn: 300000 }
   );
-
+  if (!accessToken) {
+    return false;
+  }
   return accessToken;
 }

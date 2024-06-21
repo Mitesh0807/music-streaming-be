@@ -1,4 +1,4 @@
-import logger from "@/utils/logger";
+import logger from "@/utils/logger.utils";
 import mongoose from "mongoose";
 
 const connectDB = async () => {
