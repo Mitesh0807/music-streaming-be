@@ -7,6 +7,8 @@ const requireUser = (
 ): Response | void => {
   const user = res.locals.user;
 
+  console.log("test", user);
+
   if (!user) {
     return res.sendStatus(403);
   }

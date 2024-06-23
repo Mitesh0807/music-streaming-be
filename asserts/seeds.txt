@@ -1,0 +1,98 @@
+const axios = require('axios');
+
+const API_BASE_URL = 'http://localhost:4000'; // Adjust this to your actual API base URL
+
+// Helper function to make API calls with retry logic
+async function apiCall(method, endpoint, data, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await axios({
+        method,
+        url: `${API_BASE_URL}${endpoint}`,
+        data,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Attempt ${i + 1}: Error in ${method} ${endpoint}:`, error.message);
+      if (i === retries - 1) return null;
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retrying
+    }
+  }
+}
+
+async function createRecords() {
+  // Create Genres
+  const genres = [
+    'Rock', 'Pop', 'Hip Hop', 'Electronic', 'Classical', 'Jazz', 'R&B', 'Country', 'Blues', 'Reggae'
+  ];
+  const createdGenres = [];
+  for (const genre of genres) {
+    const createdGenre = await apiCall('POST', '/genres', { name: genre });
+    if (createdGenre) createdGenres.push(createdGenre);
+  }
+  console.log(`Created ${createdGenres.length} genres`);
+
+  // Create Artists
+  const artists = [
+    { name: 'The Beatles', bio: 'Iconic British rock band' },
+    { name: 'Michael Jackson', bio: 'King of Pop' },
+    { name: 'Bob Marley', bio: 'Reggae legend' },
+    { name: 'Beyoncé', bio: 'American singer and actress' },
+    { name: 'Ed Sheeran', bio: 'British singer-songwriter' }
+  ];
+  const createdArtists = [];
+  for (const artist of artists) {
+    const createdArtist = await apiCall('POST', '/artists', artist);
+    if (createdArtist) createdArtists.push(createdArtist);
+  }
+  console.log(`Created ${createdArtists.length} artists`);
+
+  // Create Songs
+  const songs = [
+    { title: 'Hey Jude', artist: createdArtists[0]?._id, album: 'The Beatles', genre: createdGenres[0]?._id, duration: 431, url: 'https://example.com/hey-jude.mp3' },
+    { title: 'Billie Jean', artist: createdArtists[1]?._id, album: 'Thriller', genre: createdGenres[1]?._id, duration: 294, url: 'https://example.com/billie-jean.mp3' },
+    { title: 'No Woman, No Cry', artist: createdArtists[2]?._id, album: 'Natty Dread', genre: createdGenres[9]?._id, duration: 307, url: 'https://example.com/no-woman-no-cry.mp3' },
+    { title: 'Halo', artist: createdArtists[3]?._id, album: 'I Am... Sasha Fierce', genre: createdGenres[6]?._id, duration: 261, url: 'https://example.com/halo.mp3' },
+    { title: 'Shape of You', artist: createdArtists[4]?._id, album: '÷', genre: createdGenres[1]?._id, duration: 233, url: 'https://example.com/shape-of-you.mp3' }
+  ];
+  const createdSongs = [];
+  for (const song of songs) {
+    if (song.artist && song.genre) {
+      const createdSong = await apiCall('POST', '/songs', song);
+      if (createdSong) createdSongs.push(createdSong);
+    }
+  }
+  console.log(`Created ${createdSongs.length} songs`);
+
+  // Create Playlists
+  const playlists = [
+    { name: 'Classic Rock Hits', songs: [createdSongs[0]?._id], isPublic: true },
+    { name: 'Pop Favorites', songs: [createdSongs[1]?._id, createdSongs[4]?._id], isPublic: true },
+    { name: 'Chill Vibes', songs: [createdSongs[2]?._id, createdSongs[3]?._id], isPublic: false }
+  ];
+  const createdPlaylists = [];
+  for (const playlist of playlists) {
+    if (playlist.songs.some(id => id)) {
+      const createdPlaylist = await apiCall('POST', '/playlists', playlist);
+      if (createdPlaylist) createdPlaylists.push(createdPlaylist);
+    }
+  }
+  console.log(`Created ${createdPlaylists.length} playlists`);
+
+  console.log('Data creation completed');
+
+  return {
+    genres: createdGenres,
+    artists: createdArtists,
+    songs: createdSongs,
+    playlists: createdPlaylists
+  };
+}
+
+createRecords()
+  .then(result => {
+    console.log('Created records:', JSON.stringify(result, null, 2));
+  })
+  .catch(error => {
+    console.error('Error creating records:', error);
+  });

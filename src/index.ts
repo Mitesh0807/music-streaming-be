@@ -8,6 +8,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "@/database/connection.db";
 import deserializeUser from "@/middlewares/deserializeUser";
+import router from "@/routes";
 
 dotenv.config();
 (async () => await connectDB())();
@@ -30,13 +31,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(deserializeUser);
 app.use((req, res, next) => {
   logger.info(`[middleware]: ${req.method} ${req.path}`);
-  logger.info(req.body, "body");
+  // deserializeUser(req, res, next);
   next();
 });
 
 app.get("/healthcheck", (req: Request, res: Response) => {
   res.send("OK");
 });
+
+app.use(router);
 
 app.listen(port, () => {
   logger.info(`[server]: Server is running at http://localhost:${port}`);

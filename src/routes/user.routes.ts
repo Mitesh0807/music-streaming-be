@@ -1,14 +1,14 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import {
   createUserSessionHandler,
   getUserSessionsHandler,
   deleteSessionHandler,
   googleOauthHandler,
-} from "@/controller/session.controllers.js";
+} from "@/controller/session.controllers";
 import {
   createUserHandler,
   getCurrentUser,
-} from "@/controller/user.controllers.js";
+} from "@/controller/user.controllers";
 import requireUser from "@/middlewares/requireUser";
 
 const router = Router();

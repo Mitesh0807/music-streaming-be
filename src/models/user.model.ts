@@ -5,6 +5,7 @@ export interface UserDocument extends Document {
   userName: string;
   email: string;
   password: string;
+  role: "ADMIN" | "USER";
   isPasswordCorrect(password: string): Promise<boolean>;
 }
 
@@ -29,6 +30,11 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
+    },
+    role: {
+      type: String,
+      enum: ["ADMIN", "USER"],
+      default: "USER",
     },
   },
   { timestamps: true }
