@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "@/database/connection.db";
 import deserializeUser from "@/middlewares/deserializeUser";
 import router from "@/routes";
+import upload from "@/utils/storage.utils";
 
 dotenv.config();
 (async () => await connectDB())();
@@ -31,7 +32,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(deserializeUser);
 app.use((req, res, next) => {
   logger.info(`[middleware]: ${req.method} ${req.path}`);
-  // deserializeUser(req, res, next);
   next();
 });
 
@@ -39,6 +39,16 @@ app.get("/healthcheck", (req: Request, res: Response) => {
   res.send("OK");
 });
 
+//TODO : need to remove this it was testing purpose only
+app.post("/api", upload.single("file"), async (req, res) => {
+  logger.info("test");
+  const file = req?.file;
+  const files = req?.files;
+  logger.info(file);
+  logger.info(files);
+
+  res.send("OK");
+});
 app.use(router);
 
 app.listen(port, () => {
