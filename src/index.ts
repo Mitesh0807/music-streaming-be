@@ -20,7 +20,7 @@ const port = process.env.PORT || 4000;
 //TODO: proper cors setup required
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "music-streaming-fe.vercel.app"],
     credentials: true,
   })
 );
