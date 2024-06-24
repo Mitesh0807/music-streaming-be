@@ -7,6 +7,7 @@ export interface SongDocument extends Document {
   genre: mongoose.Types.ObjectId;
   duration: number;
   url: string;
+  image: string;
 }
 
 const songSchema = new Schema(
@@ -19,25 +20,24 @@ const songSchema = new Schema(
     artist: {
       type: Schema.Types.ObjectId,
       ref: "Artist",
-      required: true,
     },
     album: {
       type: String,
-      required: true,
       trim: true,
     },
     genre: {
       type: Schema.Types.ObjectId,
       ref: "Genre",
-      required: true,
     },
     duration: {
       type: Number,
-      required: true,
     },
     url: {
       type: String,
       required: true,
+    },
+    image: {
+      type: String,
     },
   },
   { timestamps: true }

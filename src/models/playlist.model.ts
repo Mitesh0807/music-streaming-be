@@ -5,6 +5,7 @@ export interface PlaylistDocument extends Document {
   user: mongoose.Types.ObjectId;
   songs: mongoose.Types.ObjectId[];
   isPublic: boolean;
+  image: string;
 }
 
 const playlistSchema = new Schema(
@@ -26,7 +27,10 @@ const playlistSchema = new Schema(
     ],
     isPublic: {
       type: Boolean,
-      default: false,
+      default: true,
+    },
+    image: {
+      type: String,
     },
   },
   { timestamps: true }

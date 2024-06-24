@@ -19,12 +19,20 @@ import {
 } from "@/controller/playlist.controllers";
 import { requireAdmin } from "@/middlewares/requireAdmin";
 import requireUser from "@/middlewares/requireUser";
+import upload from "@/utils/storage.utils";
 
 const router = Router();
 
 router.use("/users", userRouter);
 
-router.post("/songs", createSong);
+router.post(
+  "/songs",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "url", maxCount: 1 },
+  ]),
+  createSong
+);
 router.get("/songs", getSongs);
 router.get("/songs/:id", getSongById);
 
@@ -38,7 +46,7 @@ router.post("/genres", requireAdmin, createGenre);
 router.get("/genres", getGenres);
 
 // Playlist routes
-router.post("/playlists", requireUser, createPlaylist);
+router.post("/playlists", createPlaylist);
 router.get("/playlists", getPlaylists);
 router.get("/users/:userId/playlists", getUserPlaylists);
 router.post("/playlists/:playlistId/songs", addSongToPlaylist);

@@ -10,6 +10,7 @@ import connectDB from "@/database/connection.db";
 import deserializeUser from "@/middlewares/deserializeUser";
 import router from "@/routes";
 import upload from "@/utils/storage.utils";
+import bodyParser from "body-parser";
 
 dotenv.config();
 (async () => await connectDB())();
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(deserializeUser);
 app.use((req, res, next) => {
   logger.info(`[middleware]: ${req.method} ${req.path}`);
+  logger.info(`[body]: ${JSON.stringify(req.body)}`);
   next();
 });
 

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Song } from "@/models/song.model";
 import asynHandler from "express-async-handler";
+import logger from "@/utils/logger.utils";
 
 /**
  * Create a new song
@@ -9,10 +10,21 @@ import asynHandler from "express-async-handler";
  */
 export const createSong = asynHandler(async (req, res) => {
   try {
-    const song = new Song(req.body);
+    const image = (req.files as unknown as { image: any[] })?.["image"][0];
+    const url = (req.files as unknown as { url: any[] })?.["url"][0];
+    const song = new Song({
+      title: req.body.title,
+      artist: req.body.artist,
+      album: req.body.album,
+      genre: req.body.genre,
+      duration: req.body.duration,
+      url: url?.location,
+      image: image?.location,
+    });
     await song.save();
     res.status(201).json(song);
   } catch (error) {
+    logger.error(JSON.stringify(error));
     res.status(400).json({ error: "Failed to create song" });
   }
 });

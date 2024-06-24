@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface ArtistDocument extends Document {
   name: string;
   bio: string;
+  image: string;
 }
 
 const artistSchema = new Schema(
@@ -16,6 +17,9 @@ const artistSchema = new Schema(
     bio: {
       type: String,
       required: false,
+    },
+    image: {
+      type: String,
     },
   },
   { timestamps: true }
