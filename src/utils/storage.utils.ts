@@ -20,6 +20,7 @@ const upload = multer({
   storage: multers3({
     s3: s3,
     bucket: BUCKET_NAME,
+    contentType: multers3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
       cb(null, Date.now().toString());
     },
