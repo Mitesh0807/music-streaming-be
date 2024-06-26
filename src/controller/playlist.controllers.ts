@@ -82,3 +82,28 @@ export const addSongToPlaylist = asynHandler(
     }
   }
 );
+
+/**
+ * Fetches playlists based on name
+ * @param {Request} req - The request object
+ * @param {Response} res - The response object
+ * @returns {Promise<void>} - A promise that resolves when the playlists are fetched
+ * @throws {Error} - If there's an error fetching the playlists
+ */
+export const filterPlaylist = asynHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const name = req.query.name as string | undefined;
+      if (name) {
+        const playlists = await Playlist.find({
+          name: { $regex: new RegExp(name, "i") },
+        }).select("_id name");
+        res.status(200).json(playlists);
+      } else {
+        res.status(400).json({ error: "Name parameter is missing" });
+      }
+    } catch (error) {
+      res.status(400).json({ error: "Failed to filter playlists" });
+    }
+  }
+);

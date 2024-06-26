@@ -14,6 +14,7 @@ import { createGenre, getGenres } from "@/controller/genres.controllers";
 import {
   addSongToPlaylist,
   createPlaylist,
+  filterPlaylist,
   getPlaylists,
   getUserPlaylists,
 } from "@/controller/playlist.controllers";
@@ -50,5 +51,7 @@ router.post("/playlists", createPlaylist);
 router.get("/playlists", getPlaylists);
 router.get("/users/:userId/playlists", getUserPlaylists);
 router.post("/playlists/:playlistId/songs", addSongToPlaylist);
+
+router.get("/playlists/filter", filterPlaylist);
 
 export default router;
